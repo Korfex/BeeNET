@@ -23,6 +23,8 @@
 
 #endregion
 
+using MiNET.Entities.Behaviors;
+using MiNET.Items;
 using MiNET.Worlds;
 
 namespace MiNET.Entities.Passive
@@ -33,6 +35,11 @@ namespace MiNET.Entities.Passive
 		{
 			Width = Length = 0.6;
 			Height = 1.8;
+			Behaviors.Add(new TemptedBehavior(this, typeof(ItemEmerald), 10, 1.25));
+			Behaviors.Add(new WanderBehavior(this, 1.0));
+			Behaviors.Add(new LookAtPlayerBehavior(this));
+			Behaviors.Add(new RandomLookaroundBehavior(this));
+			Behaviors.Add(new PanicBehaviorNew(this, 120, 1.2)); // incorrect, replace
 		}
 	}
 }

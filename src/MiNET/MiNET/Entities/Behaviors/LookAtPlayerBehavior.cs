@@ -1,4 +1,4 @@
-#region LICENSE
+﻿#region LICENSE
 
 // The contents of this file are subject to the Common Public Attribution
 // License Version 1.0. (the "License"); you may not use this file except in
@@ -44,7 +44,7 @@ namespace MiNET.Entities.Behaviors
 
 		public override bool ShouldStart()
 		{
-			var shouldStart = _entity.Level.Random.NextDouble() < 0.02;
+			var shouldStart = _entity.Level.Random.NextDouble() < 0.005;
 			if (!shouldStart) return false;
 
 			Player player = _entity.Level.GetSpawnedPlayers().OrderBy(p => Vector3.Distance(_entity.KnownPosition, p.KnownPosition.ToVector3()))
@@ -53,7 +53,7 @@ namespace MiNET.Entities.Behaviors
 			if (player == null) return false;
 
 			_player = player;
-			_duration = 40 + _entity.Level.Random.Next(40);
+			_duration = 40 + _entity.Level.Random.Next(100);
 
 			return true;
 		}
@@ -67,23 +67,9 @@ namespace MiNET.Entities.Behaviors
 		{
 			var dx = _player.KnownPosition.X - _entity.KnownPosition.X;
 			var dz = _player.KnownPosition.Z - _entity.KnownPosition.Z;
+			_entity.Controller.RotateTowards(new Vector3(dx, 0, dz));
+			_entity.Controller.LookAt(_player);
 
-			double tanOutput = 90 - RadianToDegree(Math.Atan(dx / (dz)));
-			double thetaOffset = 270d;
-			if (dz < 0)
-			{
-				thetaOffset = 90;
-			}
-			var yaw = thetaOffset + tanOutput;
-
-			double bDiff = Math.Sqrt((dx * dx) + (dz * dz));
-			var dy = (_entity.KnownPosition.Y + _entity.Height) - (_player.KnownPosition.Y + 1.62);
-			double pitch = RadianToDegree(Math.Atan(dy / (bDiff)));
-
-			_entity.EntityDirection = (float) yaw;
-			_entity.KnownPosition.Yaw = (float) yaw;
-			_entity.KnownPosition.HeadYaw = (float) yaw;
-			_entity.KnownPosition.Pitch = (float) pitch;
 			_entity.BroadcastMove(true);
 		}
 
@@ -92,11 +78,6 @@ namespace MiNET.Entities.Behaviors
 			_player = null;
 			_entity.KnownPosition.Pitch = 0;
 			_entity.BroadcastMove(true);
-		}
-
-		private double RadianToDegree(double angle)
-		{
-			return angle * (180.0 / Math.PI);
 		}
 	}
 }

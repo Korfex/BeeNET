@@ -67,12 +67,8 @@ namespace MiNET.Blocks
 
 			if (!level.GetBlock(Coordinates + Level.Down).IsSolid)
 			{
+				new FallingBlock(level, GetRuntimeId()) {KnownPosition = new PlayerLocation(Coordinates.X + 0.5, Coordinates.Y + 0.5, Coordinates.Z + 0.5)}.SpawnEntity();
 				level.SetAir(Coordinates);
-
-				var bbox = GetBoundingBox();
-				var d = (bbox.Max - bbox.Min) / 2;
-
-				new FallingBlock(level, GetRuntimeId()) {KnownPosition = new PlayerLocation(Coordinates.X + d.X, Coordinates.Y - 0.03f, Coordinates.Z + d.Z)}.SpawnEntity();
 			}
 		}
 

@@ -25,10 +25,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Threading.Tasks;
 using MiNET.Blocks;
 using MiNET.Entities.World;
-using MiNET.Net;
+using MiNET.Particles;
 using MiNET.Utils;
 using MiNET.Utils.Vectors;
 using MiNET.Worlds;
@@ -133,6 +134,21 @@ namespace MiNET
 					}
 				}
 			}
+
+			for(int i = 0; i < 100; i++)
+			{
+				var p = new CriticalParticle(_world); // fix mapping
+				Vector3 pos = _centerCoordinates;
+				pos.X += (float) _world.Random.NextDouble() * _size * 1.5f - _size * 0.75f;
+				pos.Y += 1.8f + (float) _world.Random.NextDouble() * _size * 1.25f - _size * 0.875f;
+				pos.Z += (float) _world.Random.NextDouble() * _size * 1.5f - _size * 0.75f;
+				p.Position = pos;
+				p.Spawn();
+			}
+
+
+
+
 
 			//_size *= 2.0F;
 			return true;

@@ -43,7 +43,7 @@ namespace MiNET.Entities.Behaviors
 			_entity = entity;
 		}
 
-		public void LookAt(Entity target)
+		public void LookAt(Entity target, double pitchCap = 60)
 		{
 			if (target == null)
 			{
@@ -52,13 +52,11 @@ namespace MiNET.Entities.Behaviors
 				return;
 			}
 
-			Vector3 targetPos = target.KnownPosition + new Vector3(0, (float) (target is Player ? 1.62f : target.Height), 0);
-			Vector3 entityPos = _entity.KnownPosition + new Vector3(0, (float) _entity.Height, 0) + _entity.GetHorizDir() * (float) _entity.Length / 2f;
-			var d = Vector3.Normalize(targetPos - entityPos);
+			Vector3 targetPos = target.KnownPosition + new Vector3(0, (float) (target is Player ? 1.8f : target.Height), 0);
 
-			var dx = d.X;
-			var dy = d.Y;
-			var dz = d.Z;
+			var dx = targetPos.X - _entity.KnownPosition.X;
+			var dy = _entity.KnownPosition.Y + (float) _entity.Height - targetPos.Y;
+			var dz = targetPos.Z - _entity.KnownPosition.Z;
 
 			double tanOutput = 90 - RadianToDegree(Math.Atan(dx / (dz)));
 			double thetaOffset = 270d;
@@ -66,12 +64,16 @@ namespace MiNET.Entities.Behaviors
 			{
 				thetaOffset = 90;
 			}
-			var yaw = /*ClampDegrees*/ (thetaOffset + tanOutput);
+			var yaw = ClampDegrees(thetaOffset + tanOutput);
 
-			double pitch = RadianToDegree(-Math.Asin(dy));
+			double bDiff = Math.Sqrt((dx * dx) + (dz * dz));
+			double pitch = Math.Min(pitchCap, Math.Max(-pitchCap, RadianToDegree(Math.Atan(dy / (bDiff)))));
 
-			_entity.KnownPosition.Yaw = (float) yaw;
 			_entity.KnownPosition.HeadYaw = (float) yaw;
+			_entity.KnownPosition.Yaw = (float) yaw;
+
+			//_entity.Level.WorldTime = 20000;
+
 			_entity.KnownPosition.Pitch = (float) pitch;
 		}
 
@@ -103,7 +105,7 @@ namespace MiNET.Entities.Behaviors
 
 		private int _jumpCooldown = 0;
 
-		public void MoveForward(double speedMultiplier, Entity[] entities)
+		public void MoveForward(double speedMultiplier, Entity[] entities) // has physics problems
 		{
 			if (_jumpCooldown > 0)
 			{

@@ -54,7 +54,7 @@ namespace MiNET.Items
 		public ItemBlock([NotNull] Block block, short metadata = 0) : base(block.Name, (short) (block.Id > 255 ? 255 - block.Id : block.Id), metadata)
 		{
 			Block = block ?? throw new ArgumentNullException(nameof(block));
-	
+
 			if (BlockFactory.BlockStates.TryGetValue(block.GetState(), out BlockStateContainer value))
 			{
 				Metadata = (short) (value.ItemInstance?.Metadata ?? (value.Data == -1 ? 0 : value.Data));
@@ -93,8 +93,7 @@ namespace MiNET.Items
 				_ => throw new ArgumentOutOfRangeException(nameof(face), face, null)
 			};
 		}
-
-		public override void PlaceBlock(Level world, Player player, BlockCoordinates targetCoordinates, BlockFace face, Vector3 faceCoords)
+		public void PlaceBlock(Level world, Player player, BlockCoordinates targetCoordinates, BlockFace face, Vector3 faceCoords, bool takeItem = true)
 		{
 			Block currentBlock = world.GetBlock(targetCoordinates);
 			Block newBlock = BlockFactory.GetBlockById(Block.Id);
@@ -120,7 +119,7 @@ namespace MiNET.Items
 				world.SetBlock(newBlock);
 			}
 
-			if (player.GameMode == GameMode.Survival && newBlock.Id != 0)
+			if (takeItem && player.GameMode == GameMode.Survival && newBlock.Id != 0)
 			{
 				var itemInHand = player.Inventory.GetItemInHand();
 				itemInHand.Count--;
@@ -128,6 +127,12 @@ namespace MiNET.Items
 			}
 
 			world.BroadcastSound(newBlock.Coordinates, LevelSoundEventType.Place, newBlock.Id);
+		}
+
+
+		public override void PlaceBlock(Level world, Player player, BlockCoordinates targetCoordinates, BlockFace face, Vector3 faceCoords)
+		{
+			PlaceBlock(world, player, targetCoordinates, face, faceCoords, true);
 		}
 
 		public override string ToString()

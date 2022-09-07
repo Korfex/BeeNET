@@ -47,10 +47,10 @@ namespace MiNET.Entities.Hostile
 
 		public Zombie(Level level) : base(EntityType.Zombie, level)
 		{
-			Width = Length = 0.6;
+			Width = Length = 0.5;
 			Height = 1.95;
 			NoAi = true;
-			Speed = 0.23;
+			Speed = 0.15;
 
 			AttackDamage = 3;
 
@@ -75,6 +75,8 @@ namespace MiNET.Entities.Hostile
 			base.OnTick(entities);
 
 			Block block = Level.GetBlock(KnownPosition);
+			// add api to get top block at coords
+			
 			if (!(block is Water) && !(block is FlowingWater) && block.SkyLight > 7 && (Level.CurrentWorldCycleTime < 12566 || Level.CurrentWorldCycleTime > 23450))
 			{
 				HealthManager.Ignite(160);

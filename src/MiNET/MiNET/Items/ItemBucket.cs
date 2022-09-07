@@ -44,10 +44,12 @@ namespace MiNET.Items
 
 		public override void PlaceBlock(Level world, Player player, BlockCoordinates blockCoordinates, BlockFace face, Vector3 faceCoords)
 		{
-			if (Metadata == 8 || Metadata == 10) //Prevent some kind of cheating...
+			if (Metadata == 8 || Metadata == 10) // Prevent some kind of cheating...
 			{
 				var itemBlock = new ItemBlock(BlockFactory.GetBlockById((byte) Metadata));
-				itemBlock.PlaceBlock(world, player, blockCoordinates, face, faceCoords);
+				itemBlock.PlaceBlock(world, player, blockCoordinates, face, faceCoords, false);
+				if (player.GameMode != GameMode.Creative)
+					Metadata = 0;
 			}
 			else if (Metadata == 0) // Empty bucket
 			{
@@ -59,7 +61,9 @@ namespace MiNET.Items
 					{
 						if (fluid.LiquidDepth == 0) // Only source blocks
 						{
-							world.SetAir(blockCoordinates);
+								world.SetAir(blockCoordinates);
+								if (player.GameMode != GameMode.Creative)
+									Metadata = (short) (world.GetBlock(blockCoordinates).Id - 1);
 						}
 						break;
 					}
@@ -67,7 +71,9 @@ namespace MiNET.Items
 					{
 						if (fluid.LiquidDepth == 0) // Only source blocks
 						{
-							world.SetAir(blockCoordinates);
+								world.SetAir(blockCoordinates);
+								if(player.GameMode != GameMode.Creative)
+									Metadata = (short) world.GetBlock(blockCoordinates).Id;
 						}
 						break;
 					}

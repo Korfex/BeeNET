@@ -178,6 +178,8 @@ namespace MiNET.Items
 					return 7;
 				case ItemMaterial.Diamond:
 					return 8;
+				case ItemMaterial.Netherite:
+					return 9;
 				default:
 					return 1;
 			}

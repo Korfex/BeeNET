@@ -208,10 +208,9 @@ namespace MiNET
 			double motY = knockbackMultiplier;
 			double motZ = 0;
 			motZ -= dz / knockbackForce * knockbackMultiplier;
-			if (motY > 0.4)
-			{
-				motY = 0.4;
-			}
+
+			double maxY = 0.2;
+			motY = motY > maxY ? maxY : motY;
 
 			var velocity = new Vector3((float) motX, (float) motY + 0.0f, (float) motZ);
 
@@ -369,13 +368,16 @@ namespace MiNET
 			{
 				Entity.IsInWater = true;
 
-				Air--;
-				if (Air <= 0)
+				if (Entity is Player player && player.GameMode != GameMode.Creative)
 				{
-					if (Math.Abs(Air) % 10 == 0)
+					Air--;
+					if (Air <= 0)
 					{
-						TakeHit(null, 1, DamageCause.Drowning);
-						Entity.BroadcastSetEntityData();
+						if (Math.Abs(Air) % 10 == 0)
+						{
+							TakeHit(null, 1, DamageCause.Drowning);
+							Entity.BroadcastSetEntityData();
+						}
 					}
 				}
 
@@ -418,35 +420,37 @@ namespace MiNET
 				SuffocationTicks = 10;
 			}
 
-			if (IsInLava(Entity.KnownPosition))
-			{
-				if (LastDamageCause.Equals(DamageCause.Lava))
-				{
-					FireTick += 2;
-				}
-				else
-				{
-					Ignite(300);
-				}
+			// think about block collision routine
 
-				if (LavaTicks <= 0)
-				{
-					TakeHit(null, 4, DamageCause.Lava);
-					Entity.BroadcastSetEntityData();
+			//if (IsInLava(Entity.KnownPosition))
+			//{
+			//	if (LastDamageCause.Equals(DamageCause.Lava))
+			//	{
+			//		FireTick += 2;
+			//	}
+			//	else
+			//	{
+			//		Ignite(300);
+			//	}
 
-					LavaTicks = 10;
-				}
-				else
-				{
-					LavaTicks--;
-				}
-			}
-			else
-			{
-				LavaTicks = 0;
-			}
+			//	if (LavaTicks <= 0)
+			//	{
+			//		TakeHit(null, 4, DamageCause.Lava);
+			//		Entity.BroadcastSetEntityData();
 
-			if (!IsInLava(Entity.KnownPosition) && IsOnFire)
+			//		LavaTicks = 10;
+			//	}
+			//	else
+			//	{
+			//		LavaTicks--;
+			//	}
+			//}
+			//else
+			//{
+			//	LavaTicks = 0;
+			//}
+
+			if (IsOnFire)
 			{
 				if (FireTick <= 0)
 				{

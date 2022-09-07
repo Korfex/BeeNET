@@ -23,7 +23,9 @@
 
 #endregion
 
-using MiNET.Items;
+using System.Numerics;
+using MiNET.Particles;
+using MiNET.Worlds;
 
 namespace MiNET.Blocks
 {
@@ -36,10 +38,23 @@ namespace MiNET.Blocks
 			LightLevel = 15;
 			IsSolid = false;
 		}
-
-		public override Item[] GetDrops(Item tool)
+		public override void BreakBlock(Level world, BlockFace face, bool silent = false)
 		{
-			return new Item[0];
+			world.SetAir(Coordinates);
+
+			UpdateBlocks(world);
+			
+			for (int i = 0; i < 20; i++)
+			{
+				double x = Coordinates.X + world.Random.NextDouble() * 0.6 - 0.3 + 0.5;
+				double y = Coordinates.Y + world.Random.NextDouble() * 0.2 - 0.1;
+				double z = Coordinates.Z + world.Random.NextDouble() * 0.6 - 0.3 + 0.5;
+				var particle = new SmokeParticle(world);
+				particle.Position = new Vector3((float) x, (float) y, (float) z);
+				particle.Spawn();
+			}
+
+			world.BroadcastSound(Coordinates, LevelSoundEventType.ExtinguishFire, Id);
 		}
 	}
 }

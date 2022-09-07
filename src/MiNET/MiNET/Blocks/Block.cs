@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using log4net;
+using MiNET.Entities;
 using MiNET.Items;
 using MiNET.Particles;
 using MiNET.Utils;
@@ -243,12 +244,10 @@ namespace MiNET.Blocks
 		{
 			var playerBbox = (player.GetBoundingBox() - 0.01f);
 			var blockBbox = GetBoundingBox();
-			if (playerBbox.Intersects(blockBbox))
-			{
-				Log.Debug($"Player bbox={playerBbox}, block bbox={blockBbox}, intersects={playerBbox.Intersects(blockBbox)}");
-				Log.Debug($"Can't build where you are standing");
-				return false;
-			}
+			// get entities in world nearby blockCoordinates
+			foreach (KeyValuePair<long, Entity> kvp in world.Entities)
+				if (kvp.Value.GetBoundingBox().Intersects(blockBbox) && !(kvp.Value is Player p && p.GameMode != GameMode.Spectator))
+					return false;
 
 			return world.GetBlock(blockCoordinates).IsReplaceable;
 		}
@@ -266,6 +265,8 @@ namespace MiNET.Blocks
 			UpdateBlocks(world);
 			world.BroadcastSound(Coordinates, LevelSoundEventType.BreakBlock, Id);
 		}
+		// convert block type to levelsoundeventtype
+		
 
 		protected void UpdateBlocks(Level world)
 		{

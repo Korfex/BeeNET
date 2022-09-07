@@ -1,4 +1,4 @@
-#region LICENSE
+﻿#region LICENSE
 
 // The contents of this file are subject to the Common Public Attribution
 // License Version 1.0. (the "License"); you may not use this file except in
@@ -59,6 +59,7 @@ namespace MiNET.Entities.Behaviors
 			_entity.EntityDirection += (float) Math.Sign(_rotation) * 10;
 			_entity.KnownPosition.HeadYaw += (float) Math.Sign(_rotation) * 10;
 			_entity.KnownPosition.Yaw += (float) Math.Sign(_rotation) * 10;
+//			_entity.KnownPosition.Yaw += (float) (_entity.KnownPosition.Yaw + (_entity.KnownPosition.HeadYaw - _entity.KnownPosition.Yaw) * 0.3D) % 360;
 			_entity.BroadcastMove();
 
 			_rotation -= 10;

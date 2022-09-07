@@ -87,7 +87,7 @@ namespace MiNET.Entities.Behaviors
 			{
 				if (!_currentPath.GetNextTile(_entity, out Tile next)) return;
 
-				_entity.Controller.RotateTowards(new Vector3((float) next.X + 0.5f, _entity.KnownPosition.Y, (float) next.Y + 0.5f));
+				_entity.Controller.RotateTowards(new Vector3(next.X + 0.5f, _entity.KnownPosition.Y, next.Y + 0.5f));
 
 				if (distanceToPlayer < 1.75)
 				{
