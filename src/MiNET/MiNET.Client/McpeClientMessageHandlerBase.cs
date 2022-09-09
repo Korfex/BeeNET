@@ -737,6 +737,21 @@ namespace MiNET.Client
 		public virtual void HandleFtlCreatePlayer(FtlCreatePlayer message)
 		{
 		}
+
+		public void HandleMcpeDeathInfo(McpeDeathInfo message)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void HandleMcpeEditorNetwork(McpeEditorNetwork message)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void HandleMcpeFeatureRegistry(McpeFeatureRegistry message)
+		{
+			throw new NotImplementedException();
+		}
 	}
 
 	public class DefaultMessageHandler : McpeClientMessageHandlerBase

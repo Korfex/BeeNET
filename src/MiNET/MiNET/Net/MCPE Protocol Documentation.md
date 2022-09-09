@@ -155,6 +155,9 @@ Read more about packets and this specification on the [Protocol Wiki](https://gi
 | Request Ability | 0xb8 | 184 |   
 | Update Abilities | 0xbb | 187 |   
 | Update Adventure Settings | 0xbc | 188 |   
+| Death Info | 0xbd | 189 |   
+| Editor Network | 0xbe | 190 |   
+| Feature Registry | 0xbf | 191 |   
 | Alex Entity Animation | 0xe0 | 224 |   
 
 
@@ -188,6 +191,7 @@ Read more about packets and this specification on the [Protocol Wiki](https://gi
 | ItemStacks [(wiki)](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-Type-ItemStacks) |
 | long [(wiki)](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-Type-long) |
 | MapInfo [(wiki)](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-Type-MapInfo) |
+| MapPixels [(wiki)](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-Type-MapPixels) |
 | MaterialReducerRecipe[] [(wiki)](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-Type-MaterialReducerRecipe[]) |
 | MetadataDictionary [(wiki)](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-Type-MetadataDictionary) |
 | Nbt [(wiki)](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-Type-Nbt) |
@@ -201,6 +205,7 @@ Read more about packets and this specification on the [Protocol Wiki](https://gi
 | ResourcePackIds [(wiki)](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-Type-ResourcePackIds) |
 | ResourcePackIdVersions [(wiki)](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-Type-ResourcePackIdVersions) |
 | ResourcePackInfos [(wiki)](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-Type-ResourcePackInfos) |
+| SavedChunk[] [(wiki)](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-Type-SavedChunk[]) |
 | ScoreboardIdentityEntries [(wiki)](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-Type-ScoreboardIdentityEntries) |
 | ScoreEntries [(wiki)](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-Type-ScoreEntries) |
 | short [(wiki)](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-Type-short) |
@@ -208,6 +213,8 @@ Read more about packets and this specification on the [Protocol Wiki](https://gi
 | SignedVarLong [(wiki)](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-Type-SignedVarLong) |
 | Skin [(wiki)](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-Type-Skin) |
 | string [(wiki)](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-Type-string) |
+| String [(wiki)](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-Type-String) |
+| String[] [(wiki)](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-Type-String[]) |
 | SubChunkPositionOffset[] [(wiki)](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-Type-SubChunkPositionOffset[]) |
 | TexturePackInfos [(wiki)](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-Type-TexturePackInfos) |
 | Transaction [(wiki)](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-Type-Transaction) |
@@ -1549,6 +1556,7 @@ Wiki: [Clientbound Map Item Data ](https://github.com/NiclasOlofsson/MiNET/wiki/
 | Name | Type | Size |
 |:-----|:-----|:-----|
 |MapInfo | MapInfo |  |
+|Origin | BlockCoordinates |  |
 -----------------------------------------------------------------------
 ### Map Info Request (0x44)
 Wiki: [Map Info Request](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-MapInfoRequest)
@@ -1564,6 +1572,7 @@ Wiki: [Map Info Request](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-
 | Name | Type | Size |
 |:-----|:-----|:-----|
 |Map ID | SignedVarLong |  |
+|Pixels | MapPixels |  |
 -----------------------------------------------------------------------
 ### Request Chunk Radius (0x45)
 Wiki: [Request Chunk Radius](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-RequestChunkRadius)
@@ -2120,6 +2129,7 @@ Wiki: [Modal Form Response](https://github.com/NiclasOlofsson/MiNET/wiki//Protoc
 |:-----|:-----|:-----|
 |Form Id | UnsignedVarInt |  |
 |Data | string |  |
+|Cancel Reason | byte |  |
 -----------------------------------------------------------------------
 ### Server Settings Request (0x66)
 Wiki: [Server Settings Request](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-ServerSettingsRequest)
@@ -2452,6 +2462,7 @@ Wiki: [Network Chunk Publisher Update](https://github.com/NiclasOlofsson/MiNET/w
 |:-----|:-----|:-----|
 |Coordinates | BlockCoordinates |  |
 |Radius | UnsignedVarInt |  |
+|Saved Chunks | SavedChunk[] |  |
 -----------------------------------------------------------------------
 ### Biome Definition List (0x7a)
 Wiki: [Biome Definition List](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-BiomeDefinitionList)
@@ -2945,6 +2956,52 @@ Wiki: [Update Adventure Settings](https://github.com/NiclasOlofsson/MiNET/wiki//
 |Immutable World | bool |  |
 |Show NameTags | bool |  |
 |Auto Jump | bool |  |
+-----------------------------------------------------------------------
+### Death Info (0xbd)
+Wiki: [Death Info](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-DeathInfo)
+
+**Sent from server:** true  
+**Sent from client:** false
+
+
+
+
+#### Fields
+
+| Name | Type | Size |
+|:-----|:-----|:-----|
+|Attack Cause | String |  |
+|Message List | String[] |  |
+-----------------------------------------------------------------------
+### Editor Network (0xbe)
+Wiki: [Editor Network](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-EditorNetwork)
+
+**Sent from server:** true  
+**Sent from client:** false
+
+
+
+
+#### Fields
+
+| Name | Type | Size |
+|:-----|:-----|:-----|
+-----------------------------------------------------------------------
+### Feature Registry (0xbf)
+Wiki: [Feature Registry](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-FeatureRegistry)
+
+**Sent from server:** true  
+**Sent from client:** false
+
+
+
+
+#### Fields
+
+| Name | Type | Size |
+|:-----|:-----|:-----|
+|Name | String |  |
+|JSON | String |  |
 -----------------------------------------------------------------------
 ### Request Ability (0xb8)
 Wiki: [Request Ability](https://github.com/NiclasOlofsson/MiNET/wiki//Protocol-RequestAbility)

@@ -41,13 +41,14 @@ using LongString = System.String;
 using MiNET.Utils.Metadata;
 using MiNET.Utils.Vectors;
 using MiNET.Utils.Nbt;
+using MiNET.Net.Types;
 
 namespace MiNET.Net
 {
 	public class McpeProtocolInfo
 	{
-		public const int ProtocolVersion = 534;
-		public const string GameVersion = "1.19.10";
+		public const int ProtocolVersion = 545;
+		public const string GameVersion = "1.19.21";
 	}
 
 	public interface IMcpeMessageHandler
@@ -243,6 +244,9 @@ namespace MiNET.Net
 		void HandleMcpeDimensionData(McpeDimensionData message);
 		void HandleMcpeUpdateAbilities(McpeUpdateAbilities message);
 		void HandleMcpeUpdateAdventureSettings(McpeUpdateAdventureSettings message);
+		void HandleMcpeDeathInfo(McpeDeathInfo message);
+		void HandleMcpeEditorNetwork(McpeEditorNetwork message);
+		void HandleMcpeFeatureRegistry(McpeFeatureRegistry message);
 		void HandleMcpeAlexEntityAnimation(McpeAlexEntityAnimation message);
 		void HandleFtlCreatePlayer(FtlCreatePlayer message);
 	}
@@ -641,6 +645,15 @@ namespace MiNET.Net
 				case McpeUpdateAdventureSettings msg:
 					_messageHandler.HandleMcpeUpdateAdventureSettings(msg);
 					break;
+				case McpeDeathInfo msg:
+					_messageHandler.HandleMcpeDeathInfo(msg);
+					break;
+				case McpeEditorNetwork msg:
+					_messageHandler.HandleMcpeEditorNetwork(msg);
+					break;
+				case McpeFeatureRegistry msg:
+					_messageHandler.HandleMcpeFeatureRegistry(msg);
+					break;
 				case McpeAlexEntityAnimation msg:
 					_messageHandler.HandleMcpeAlexEntityAnimation(msg);
 					break;
@@ -1008,6 +1021,12 @@ namespace MiNET.Net
 						return McpeUpdateAbilities.CreateObject().Decode(buffer);
 					case 0xbc:
 						return McpeUpdateAdventureSettings.CreateObject().Decode(buffer);
+					case 0xbd:
+						return McpeDeathInfo.CreateObject().Decode(buffer);
+					case 0xbe:
+						return McpeEditorNetwork.CreateObject().Decode(buffer);
+					case 0xbf:
+						return McpeFeatureRegistry.CreateObject().Decode(buffer);
 					case 0xb8:
 						return McpeRequestAbility.CreateObject().Decode(buffer);
 					case 0xe0:
@@ -5789,6 +5808,7 @@ namespace MiNET.Net
 	{
 
 		public MapInfo mapinfo; // = null;
+		public BlockCoordinates origin; // = null;
 
 		public McpeClientboundMapItemData()
 		{
@@ -5803,6 +5823,7 @@ namespace MiNET.Net
 			BeforeEncode();
 
 			Write(mapinfo);
+			Write(origin);
 
 			AfterEncode();
 		}
@@ -5817,6 +5838,7 @@ namespace MiNET.Net
 			BeforeDecode();
 
 			mapinfo = ReadMapInfo();
+			origin = ReadBlockCoordinates();
 
 			AfterDecode();
 		}
@@ -5829,6 +5851,7 @@ namespace MiNET.Net
 			base.ResetPacket();
 
 			mapinfo=default(MapInfo);
+			origin=default(BlockCoordinates);
 		}
 
 	}
@@ -5837,6 +5860,7 @@ namespace MiNET.Net
 	{
 
 		public long mapId; // = null;
+		public MapPixels pixels; // = null;
 
 		public McpeMapInfoRequest()
 		{
@@ -5851,6 +5875,7 @@ namespace MiNET.Net
 			BeforeEncode();
 
 			WriteSignedVarLong(mapId);
+			Write(pixels);
 
 			AfterEncode();
 		}
@@ -5865,6 +5890,7 @@ namespace MiNET.Net
 			BeforeDecode();
 
 			mapId = ReadSignedVarLong();
+			pixels = ReadMapPixels();
 
 			AfterDecode();
 		}
@@ -5877,6 +5903,7 @@ namespace MiNET.Net
 			base.ResetPacket();
 
 			mapId=default(long);
+			pixels=default(MapPixels);
 		}
 
 	}
@@ -7618,6 +7645,7 @@ namespace MiNET.Net
 
 		public uint formId; // = null;
 		public string data; // = null;
+		public byte cancelReason; // = null;
 
 		public McpeModalFormResponse()
 		{
@@ -7633,6 +7661,7 @@ namespace MiNET.Net
 
 			WriteUnsignedVarInt(formId);
 			Write(data);
+			Write(cancelReason);
 
 			AfterEncode();
 		}
@@ -7648,6 +7677,7 @@ namespace MiNET.Net
 
 			formId = ReadUnsignedVarInt();
 			data = ReadString();
+			cancelReason = ReadByte();
 
 			AfterDecode();
 		}
@@ -7661,6 +7691,7 @@ namespace MiNET.Net
 
 			formId=default(uint);
 			data=default(string);
+			cancelReason=default(byte);
 		}
 
 	}
@@ -8646,6 +8677,7 @@ namespace MiNET.Net
 
 		public BlockCoordinates coordinates; // = null;
 		public uint radius; // = null;
+		public SavedChunk[] savedChunks; // = null;
 
 		public McpeNetworkChunkPublisherUpdate()
 		{
@@ -8661,6 +8693,7 @@ namespace MiNET.Net
 
 			Write(coordinates);
 			WriteUnsignedVarInt(radius);
+			Write(savedChunks);
 
 			AfterEncode();
 		}
@@ -8676,6 +8709,7 @@ namespace MiNET.Net
 
 			coordinates = ReadBlockCoordinates();
 			radius = ReadUnsignedVarInt();
+			savedChunks = ReadSavedChunks();
 
 			AfterDecode();
 		}
@@ -8689,6 +8723,7 @@ namespace MiNET.Net
 
 			coordinates=default(BlockCoordinates);
 			radius=default(uint);
+			savedChunks=default(SavedChunk[]);
 		}
 
 	}
@@ -10177,6 +10212,154 @@ namespace MiNET.Net
 			immutableWorld=default(bool);
 			showNametags=default(bool);
 			autoJump=default(bool);
+		}
+
+	}
+
+	public partial class McpeDeathInfo : Packet<McpeDeathInfo>
+	{
+
+		public String attackCause; // = null;
+		public String[] messageList; // = null;
+
+		public McpeDeathInfo()
+		{
+			Id = 0xbd;
+			IsMcpe = true;
+		}
+
+		protected override void EncodePacket()
+		{
+			base.EncodePacket();
+
+			BeforeEncode();
+
+			Write(attackCause);
+			Write(messageList);
+
+			AfterEncode();
+		}
+
+		partial void BeforeEncode();
+		partial void AfterEncode();
+
+		protected override void DecodePacket()
+		{
+			base.DecodePacket();
+
+			BeforeDecode();
+
+			attackCause = ReadString();
+			messageList = ReadStrings();
+
+			AfterDecode();
+		}
+
+		partial void BeforeDecode();
+		partial void AfterDecode();
+
+		protected override void ResetPacket()
+		{
+			base.ResetPacket();
+
+			attackCause=default(String);
+			messageList=default(String[]);
+		}
+
+	}
+
+	public partial class McpeEditorNetwork : Packet<McpeEditorNetwork>
+	{
+
+
+		public McpeEditorNetwork()
+		{
+			Id = 0xbe;
+			IsMcpe = true;
+		}
+
+		protected override void EncodePacket()
+		{
+			base.EncodePacket();
+
+			BeforeEncode();
+
+
+			AfterEncode();
+		}
+
+		partial void BeforeEncode();
+		partial void AfterEncode();
+
+		protected override void DecodePacket()
+		{
+			base.DecodePacket();
+
+			BeforeDecode();
+
+
+			AfterDecode();
+		}
+
+		partial void BeforeDecode();
+		partial void AfterDecode();
+
+		protected override void ResetPacket()
+		{
+			base.ResetPacket();
+
+		}
+
+	}
+
+	public partial class McpeFeatureRegistry : Packet<McpeFeatureRegistry>
+	{
+
+		public String name; // = null;
+		public String json; // = null;
+
+		public McpeFeatureRegistry()
+		{
+			Id = 0xbf;
+			IsMcpe = true;
+		}
+
+		protected override void EncodePacket()
+		{
+			base.EncodePacket();
+
+			BeforeEncode();
+
+			Write(name);
+			Write(json);
+
+			AfterEncode();
+		}
+
+		partial void BeforeEncode();
+		partial void AfterEncode();
+
+		protected override void DecodePacket()
+		{
+			base.DecodePacket();
+
+			BeforeDecode();
+
+			name = ReadString();
+			json = ReadString();
+
+			AfterDecode();
+		}
+
+		partial void BeforeDecode();
+		partial void AfterDecode();
+
+		protected override void ResetPacket()
+		{
+			base.ResetPacket();
+
+			name=default(String);
+			json=default(String);
 		}
 
 	}

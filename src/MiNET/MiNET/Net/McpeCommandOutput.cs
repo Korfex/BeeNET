@@ -22,6 +22,7 @@
 #endregion
 
 using System;
+using MiNET.Net.Types;
 
 namespace MiNET.Net
 {

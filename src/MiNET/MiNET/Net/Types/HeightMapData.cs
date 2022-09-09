@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace MiNET.Net;
+namespace MiNET.Net.Types;
 
 public class HeightMapData
 {
@@ -17,7 +17,7 @@ public class HeightMapData
 
 	public int GetHeight(int x, int z)
 	{
-		return Heights[((z & 0xf) << 4) | (x & 0xf)];
+		return Heights[(z & 0xf) << 4 | x & 0xf];
 	}
 
 	public bool IsAllTooLow => Heights.Any(x => x > 0);
@@ -37,7 +37,7 @@ public enum SubChunkRequestResult : byte
 	Success = 1,
 	NoSuchChunk = 2,
 	WrongDimension = 3,
-	NullPlayer = 4, 
+	NullPlayer = 4,
 	YIndexOutOfBounds = 5,
 	SuccessAllAir = 6
 }

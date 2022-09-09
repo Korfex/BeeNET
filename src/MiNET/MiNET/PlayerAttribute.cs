@@ -23,6 +23,9 @@
 
 #endregion
 
+using System.Collections.Generic;
+using System.Linq;
+
 namespace MiNET
 {
 	public class PlayerAttribute
@@ -32,11 +35,31 @@ namespace MiNET
 		public float MaxValue { get; set; }
 		public float Value { get; set; }
 		public float Default { get; set; }
+		public List<AttributeModifier> Modifiers { get; set; }
 
 		public override string ToString()
 		{
-			return $"{{Name: {Name}, MinValue: {MinValue}, MaxValue: {MaxValue}, Value: {Value}, Default: {Default}}}";
+			return $"{{Name: {Name}, MinValue: {MinValue}, MaxValue: {MaxValue}, Value: {Value}, Default: {Default}, Modifiers: {Modifiers.Count}}}";
 		}
+	}
+
+	public class AttributeModifier
+	{
+		public string Id;
+		public string Name;
+		public float Amount;
+		public AttributeOperation Operation;
+		public int Operand; // Int
+		public bool Serializable;
+	}
+
+	public enum AttributeOperation
+	{
+		ADDITION,
+		MULTIPLY_BASE,
+		MULTIPLY_TOTAL,
+		CAP,
+		INVALID
 	}
 
 	public class EntityAttribute

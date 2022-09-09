@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using MiNET.Net.Types;
 
 namespace MiNET.Net;
 

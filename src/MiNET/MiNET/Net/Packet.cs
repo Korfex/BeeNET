@@ -42,6 +42,7 @@ using MiNET.Blocks;
 using MiNET.Crafting;
 using MiNET.Items;
 using MiNET.Net.RakNet;
+using MiNET.Net.Types;
 using MiNET.Utils;
 using MiNET.Utils.IO;
 using MiNET.Utils.Metadata;
@@ -437,6 +438,17 @@ namespace MiNET.Net
 			WriteLength(bytes.Length);
 			Write(bytes);
 		}
+		public void Write(string[] strings)
+		{
+			if(strings == null)
+			{
+				WriteUnsignedVarInt(0);
+				return;
+			}
+			WriteUnsignedVarInt((uint)strings.Length);
+			foreach (string s in strings)
+				Write(s);
+		}
 
 		public string ReadString()
 		{
@@ -444,6 +456,14 @@ namespace MiNET.Net
 			int len = ReadLength();
 			if (len <= 0) return string.Empty;
 			return Encoding.UTF8.GetString(ReadBytes(len));
+		}
+		public string[] ReadStrings()
+		{
+			var count = ReadUnsignedVarInt();
+			var strings = new string[count];
+			for (int i = 0; i < count; i++)
+				strings[i] = ReadString();
+			return strings;
 		}
 
 		public void WriteFixedString(string value)
@@ -1883,6 +1903,7 @@ namespace MiNET.Net
 					Value = ReadFloat(),
 					Default = ReadFloat(),
 					Name = ReadString(),
+					Modifiers = ReadAttributeModifiers(),
 				};
 
 				attributes[attribute.Name] = attribute;
@@ -1901,9 +1922,45 @@ namespace MiNET.Net
 				Write(attribute.Value);
 				Write(attribute.Default); // unknown
 				Write(attribute.Name);
+				Write(attribute.Modifiers);
 			}
 		}
+		public List<AttributeModifier> ReadAttributeModifiers()
+		{
+			List<AttributeModifier> attributeModifiers = new List<AttributeModifier>();
+			var count = ReadUnsignedVarInt();
+			for (int i = 0; i < count; i++)
+			{
+				AttributeModifier am = new AttributeModifier();
+				am.Id = ReadString();
+				am.Name = ReadString();
+				am.Amount = ReadFloat();
+				am.Operation = (AttributeOperation) ReadInt();
+				am.Operand = ReadInt();
+				am.Serializable = ReadBool();
+				attributeModifiers.Add(am);
+			}
+			return attributeModifiers;
+		}
 
+		public void Write(List<AttributeModifier> attributeModifiers)
+		{
+			if(attributeModifiers == null)
+			{
+				WriteUnsignedVarInt((uint) 0);
+				return;
+			}
+			Write((uint) attributeModifiers.Count);
+			foreach(AttributeModifier am in attributeModifiers)
+			{
+				Write(am.Id);
+				Write(am.Name);
+				Write(am.Amount);
+				Write((int)am.Operation);
+				Write(am.Operand);
+				Write(am.Serializable);
+			}
+		}
 
 		public GameRules ReadGameRules()
 		{
@@ -3009,6 +3066,36 @@ namespace MiNET.Net
 			return recipes;
 		}
 
+		public void Write(SavedChunk[] savedChunks)
+		{
+			if(savedChunks == null)
+			{
+				WriteUnsignedVarInt(0);
+				return;
+			}
+			WriteUnsignedVarInt((uint) savedChunks.Length);
+			foreach(SavedChunk chunk in savedChunks)
+			{
+				WriteVarInt(chunk.X);
+				WriteVarInt(chunk.Y);
+			}
+		}
+
+		public SavedChunk[] ReadSavedChunks()
+		{
+			int count = (int) ReadUnsignedVarInt();
+			SavedChunk[] savedChunks = new SavedChunk[count];
+
+			for(int i = 0; i < count/2; i++)
+			{
+				savedChunks[i] = new SavedChunk();
+				savedChunks[i].X = ReadVarInt();
+				savedChunks[i].Y = ReadVarInt();
+			}
+
+			return savedChunks;
+		}
+
 
 		const int MapUpdateFlagTexture = 0x02;
 		const int MapUpdateFlagDecoration = 0x04;
@@ -3570,7 +3657,47 @@ namespace MiNET.Net
 
 			return definitions;
 		}
-		
+
+		public MapPixels ReadMapPixels()
+		{
+			MapPixels mapPixels = new MapPixels(ReadVarInt());
+
+			for (int i = 0; i < mapPixels.Data.Length; i++)
+			{
+				var mp = new MapPixel();
+				mp.Color = ReadInt();
+				mp.Index = ReadUshort();
+				mapPixels.Data[i] = mp;
+			}
+
+			return mapPixels;
+		}
+
+		public void Write(MapPixels mapPixels)
+		{
+			Write(mapPixels.Data.Length);
+			for (int i = 0; i < mapPixels.Data.Length; i++)
+			{
+				Write(mapPixels.Data[i].Color);
+				Write(mapPixels.Data[i].Index);
+			}
+		}
+		/* TODO: finish stuff
+		public void WriteOptional<T>(T data)
+		{
+			if (data != null)
+				Write(data);
+		}
+
+		public void ReadOptional<T>(T data)
+		{
+			if (ReadBool())
+				Read(data);
+			else
+				return false;
+		}
+		//*/
+
 		public bool CanRead()
 		{
 			return _reader.Position < _reader.Length;

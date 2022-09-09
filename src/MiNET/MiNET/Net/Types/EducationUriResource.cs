@@ -1,4 +1,4 @@
-﻿namespace MiNET.Net;
+﻿namespace MiNET.Net.Types;
 
 public class EducationUriResource
 {
@@ -7,7 +7,7 @@ public class EducationUriResource
 
 	public EducationUriResource()
 	{
-		
+
 	}
 
 	public EducationUriResource(string buttonName, string linkUri)

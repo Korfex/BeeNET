@@ -1,4 +1,6 @@
-﻿namespace MiNET.Net;
+﻿using MiNET.Net.Types;
+
+namespace MiNET.Net;
 
 partial class McpeSubChunkPacket
 {

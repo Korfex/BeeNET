@@ -44,6 +44,7 @@ using MiNET.Entities.Passive;
 using MiNET.Entities.World;
 using MiNET.Items;
 using MiNET.Net;
+using MiNET.Net.Types;
 using MiNET.Particles;
 using MiNET.UI;
 using MiNET.Utils;

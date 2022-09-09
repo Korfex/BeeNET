@@ -2,6 +2,7 @@
 using System.Numerics;
 using fNbt;
 using log4net;
+using MiNET.Net.Types;
 using MiNET.Utils;
 using MiNET.Utils.Nbt;
 
@@ -67,12 +68,17 @@ namespace MiNET.Net
 		public bool isFromWorldTemplate; // = null;
 		public bool isWorldTemplateOptionLocked; // = null;
 		public bool onlySpawnV1Villagers; // = null;
+		public bool isDisablingPersonas;
+		public bool isDisablingCustomSkins;
 		public string gameVersion; // = null;
 		public int limitedWorldWidth; // = null;
 		public int limitedWorldLength; // = null;
 		public bool isNewNether; // = null;
 		public EducationUriResource eduSharedUriResource = null;
 		public bool experimentalGameplayOverride; // = null;
+		public bool experimentalGameplay; // = null;
+		public ChatRestrictionLevel chatRestrictionLevel; // = null;
+		public bool isDisablingPlayerInteractions; // = null;
 
 		public void Write(Packet packet)
 		{
@@ -118,12 +124,18 @@ namespace MiNET.Net
 			packet.Write(isFromWorldTemplate);
 			packet.Write(isWorldTemplateOptionLocked);
 			packet.Write(onlySpawnV1Villagers);
+			packet.Write(isDisablingPersonas);
+			packet.Write(isDisablingCustomSkins);
 			packet.Write(gameVersion);
 			packet.Write(limitedWorldWidth);
 			packet.Write(limitedWorldLength);
 			packet.Write(isNewNether);
 			packet.Write(eduSharedUriResource ?? new EducationUriResource("", ""));
-			packet.Write(false);
+			packet.Write(experimentalGameplayOverride);
+			if(experimentalGameplayOverride)
+				packet.Write(experimentalGameplay);
+			packet.Write((byte) chatRestrictionLevel); // chatRestrictionLevel
+			packet.Write(isDisablingPlayerInteractions); // isDisablingPlayerInteractions
 		}
 
 		public void Read(Packet packet)
@@ -170,6 +182,8 @@ namespace MiNET.Net
 			isFromWorldTemplate = packet.ReadBool();
 			isWorldTemplateOptionLocked = packet.ReadBool();
 			onlySpawnV1Villagers = packet.ReadBool();
+			isDisablingPersonas = packet.ReadBool();
+			isDisablingCustomSkins = packet.ReadBool();
 			gameVersion = packet.ReadString();
 
 			limitedWorldWidth = packet.ReadInt();
@@ -177,14 +191,11 @@ namespace MiNET.Net
 			isNewNether = packet.ReadBool();
 			eduSharedUriResource = packet.ReadEducationUriResource();
 
-			if (packet.ReadBool())
-			{
-				experimentalGameplayOverride = packet.ReadBool();
-			}
-			else
-			{
-				experimentalGameplayOverride = false;
-			}
+			experimentalGameplayOverride = packet.ReadBool();
+			if(experimentalGameplayOverride)
+				experimentalGameplay = packet.ReadBool();
+			chatRestrictionLevel = (ChatRestrictionLevel)packet.ReadByte();
+			isDisablingPlayerInteractions = packet.ReadBool();
 		}
 	}
 

@@ -23,7 +23,7 @@
 
 using MiNET.Utils;
 
-namespace MiNET.Net
+namespace MiNET.Net.Types
 {
 	public enum CommandOriginType
 	{
@@ -40,7 +40,7 @@ namespace MiNET.Net
 		GameArgument = 10,
 		EntityServer = 11
 	}
-	
+
 	public class CommandOriginData
 	{
 		public CommandOriginType Type { get; set; }

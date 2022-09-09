@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 
-namespace MiNET.Net
+namespace MiNET.Net.Types
 {
 	public class Experiments : List<Experiments.Experiment>
 	{
-		
+
 		public class Experiment
 		{
 			public string Name { get; }

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
-<protocol gameVersion="1.19.10" protocolVersion="534">
+<protocol gameVersion="1.19.21" protocolVersion="545">
 
 	<constants>
 		<constant id="OFFLINE_MESSAGE_DATA_ID" type="byte[]"
@@ -737,10 +737,12 @@
 
 	<pdu id="0x43" online="false" client="false" server="true" name="MCPE_CLIENTBOUND_MAP_ITEM_DATA ">
 		<field name="MapInfo" type="MapInfo" />
+		<field name="Origin" type="BlockCoordinates" />
 	</pdu>
 
 	<pdu id="0x44" online="false" client="true" server="true" name="MCPE_MAP_INFO_REQUEST">
 		<field name="Map ID" type="SignedVarLong" />
+		<field name="Pixels" type="MapPixels" />
 	</pdu>
 
 	<pdu id="0x45" online="false" client="true" server="true" name="MCPE_REQUEST_CHUNK_RADIUS">
@@ -945,7 +947,8 @@
 
 	<pdu id="0x65" online="false" client="true" server="false" name="MCPE_MODAL_FORM_RESPONSE">
 		<field name="Form Id" type="UnsignedVarInt" />
-		<field name="Data" type="string" />
+		<field name="Data" type="string" optional="true" />
+		<field name="Cancel Reason" type="byte" optional="true" />
 	</pdu>
 
 	<pdu id="0x66" online="false" client="true" server="false" name="MCPE_SERVER_SETTINGS_REQUEST">
@@ -1042,7 +1045,7 @@
 		<field name="Entity ID" type="SignedVarLong" />
 		<field name="Position" type="Vector3" />
 		<field name="Particle name" type="string" />
-		<field name="Molang Variables Json" type="string" />
+		<field name="Molang Variables Json" type="string" optional="true" />
 	</pdu>
 
 	<pdu id="0x77" online="false" client="false" server="true" name="MCPE_AVAILABLE_ENTITY_IDENTIFIERS">
@@ -1057,10 +1060,11 @@
 		<field name="Is baby mob" type="bool" />
 		<field name="Is global" type="bool" />
 	</pdu>
-
+<!-- TODO: Fix stuff -->
 	<pdu id="0x79" online="false" client="false" server="true" name="MCPE_NETWORK_CHUNK_PUBLISHER_UPDATE">
 		<field name="Coordinates" type="BlockCoordinates" />
 		<field name="Radius" type="UnsignedVarInt" />
+		<field name="Saved Chunks" type="SavedChunk[]" />
 	</pdu>
 
 	<pdu id="0x7a" online="false" client="false" server="true" name="MCPE_BIOME_DEFINITION_LIST">
@@ -1227,13 +1231,27 @@
 		<field name="Command Permissions" type="byte" />
 		<field name="Layers" type="AbilityLayers" />
 	</pdu>
-	
+
 	<pdu id="0xbc" online="false" client="false" server="true" name="MCPE_UPDATE_ADVENTURE_SETTINGS">
 		<field name="No PvM" type="bool" />
 		<field name="No MvP" type="bool" />
 		<field name="Immutable World" type="bool" />
 		<field name="Show NameTags" type="bool" />
 		<field name="Auto Jump" type="bool" />
+	</pdu>
+
+	<pdu id="0xbd" online="false" client="false" server="true" name="MCPE_DEATH_INFO">
+		<field name="Attack Cause" type="String" />
+		<field name="Message List" type="String[]" />
+	</pdu>
+
+	<pdu id="0xbe" online="false" client="false" server="true" name="MCPE_EDITOR_NETWORK">
+
+	</pdu>
+
+	<pdu id="0xbf" online="false" client="false" server="true" name="MCPE_FEATURE_REGISTRY">
+		<field name="Name" type="String" />
+		<field name="JSON" type="String" />
 	</pdu>
 
 	<pdu id="0xb8" online="false" client="true" server="false" name="MCPE_REQUEST_ABILITY">
