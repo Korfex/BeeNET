@@ -58,9 +58,6 @@ namespace MiNET.Console
 			var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
 			XmlConfigurator.Configure(logRepository, new FileInfo(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "log4net.xml")));
 
-			Log.Info(MiNetServer.MiNET);
-			System.Console.WriteLine(MiNetServer.MiNET);
-
 			var currentProcess = Process.GetCurrentProcess();
 			currentProcess.ProcessorAffinity = (IntPtr) Config.GetProperty("ProcessorAffinity", (int) currentProcess.ProcessorAffinity);
 
@@ -75,9 +72,27 @@ namespace MiNET.Console
 
 			service.StartServer();
 
-			System.Console.WriteLine("MiNET running. Press <enter> to stop service.");
-			System.Console.ReadLine();
-			service.StopServer();
+			System.Console.WriteLine(MiNetServer.MiNET);
+			Log.Info("Type /? or /help for a list of commands");
+
+			while (true)
+			{
+				var cmd = System.Console.ReadLine();
+
+				if (cmd == "")
+				{
+					Log.Info("Type /? or /help for a list of commands");
+					return;
+				}
+
+				if (cmd.ToLower() == "exit")
+				{
+					service.StopServer();
+					return;
+				}
+
+				Log.Error("Unknown Command /" + cmd + ". Please check that the command exists and that you have the permission to use it!");
+			}
 		}
 	}
 }

@@ -966,7 +966,7 @@ namespace MiNET.Worlds
 
 				testTime.Stop(); // STOP
 
-				Log.Warn($"Took {time.ElapsedMilliseconds}ms to save. And {testTime.ElapsedMilliseconds}ms to generate bytes from NBT");
+				//Log.Warn($"Took {time.ElapsedMilliseconds}ms to save. And {testTime.ElapsedMilliseconds}ms to generate bytes from NBT");
 			}
 		}
 
