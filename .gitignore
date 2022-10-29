@@ -192,3 +192,4 @@ FakesAssemblies/
 .vs/
 
 /src/MiNET/MiNET.Console/dist
+/src/MiNET/PlaygroundPlugin

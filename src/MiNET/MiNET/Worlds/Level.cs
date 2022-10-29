@@ -656,16 +656,28 @@ namespace MiNET.Worlds
 				var entityMeasurement = worldTickMeasurement?.Begin("Entity tick");
 
 				// Entity updates
-				foreach (Entity entity in entities)
+				var entitiesTasks = new List<Task>();
+				var splits = entities.Chunk(Environment.ProcessorCount);
+				foreach (var split in splits)
 				{
-					entity.OnTick(entities);
+					var task = new Task(() =>
+					{
+						foreach (var entity in split)
+						{
+							entity.OnTick(entities);
+						}
+					});
+					entitiesTasks.Add(task);
+					task.Start();
 				}
+				Task.WhenAll(entitiesTasks).Wait();
 
 				entityMeasurement?.End();
 
 				PlayerCount = players.Length;
 
 				// Player tick
+				// This is single threaded because it could cause desync between players. Needs testing.
 				var playerMeasurement = worldTickMeasurement?.Begin("Player tick");
 
 				foreach (var player in players)
